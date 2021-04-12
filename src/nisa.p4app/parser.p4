@@ -10,14 +10,17 @@ parser ParserImpl(packet_in packet, out headers hdr, inout metadata meta, inout 
             default:        accept;
         }
     }
+
     @name("parse_ipv4") state parse_ipv4 {
         packet.extract(hdr.ipv4);
         transition accept;
     }
+
     @name("parse_instr") state parse_instr {
         packet.extract(hdr.instr);
         transition accept;
     }
+    
     @name("start") state start {
         transition parse_ethernet;
     }
