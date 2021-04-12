@@ -33,6 +33,12 @@ header ipv4_t {
     bit<32> dstAddr;
 }
 
+header instr_t {
+    bit<8> opcode;
+    bit<32> rd;
+    bit<32> rs1;
+    bit<32> rs2;
+}
 
 struct metadata {
     @name("ingress_metadata")
@@ -46,6 +52,8 @@ struct headers {
     ethernet_t ethernet;
     @name("ipv4")
     ipv4_t     ipv4;
+    @name("instr")
+    instr_t    instr;
 }
 
 #endif // __HEADER_H__

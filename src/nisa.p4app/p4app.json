@@ -17,12 +17,12 @@
                ],
       "hosts": {
         "h1": {
-            "cmd": "",
-            "wait": false
+          "cmd": "",
+          "wait": false
         },
         "h2": {
-            "cmd": "",
-            "wait": false
+          "cmd": "",
+          "wait": false
         },
         "h3": {
           "cmd": "",
