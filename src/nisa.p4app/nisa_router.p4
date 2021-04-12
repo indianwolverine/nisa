@@ -92,6 +92,7 @@ control ingress(inout headers hdr, inout metadata meta, inout standard_metadata_
         actions = {
             _drop;
             instr_rts;
+            NoAction;
         }
         default_action = NoAction();
         const entries = {
