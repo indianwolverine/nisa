@@ -5,7 +5,7 @@ parser ParserImpl(packet_in packet, out headers hdr, inout metadata meta, inout 
     @name("parse_ethernet") state parse_ethernet {
         packet.extract(hdr.ethernet);
         transition select(hdr.ethernet.etherType) {
-            IPV4_ETYPE:       parse_ipv4;
+            IPV4_ETYPE:     parse_ipv4;
             INSTR_ETYPE:    parse_instr;
             default:        accept;
         }

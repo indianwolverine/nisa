@@ -5,6 +5,7 @@
 #include "parser.p4"
 
 const bit<8> INSTR_RTS = 0x00;
+const bit<8> INSTR_RTS_IFQ = 0x01;
 
 control egress(inout headers hdr, inout metadata meta, inout standard_metadata_t standard_metadata) {
     @name("rewrite_mac") action rewrite_mac(bit<48> smac) {
@@ -59,6 +60,14 @@ control ingress(inout headers hdr, inout metadata meta, inout standard_metadata_
         standard_metadata.egress_spec = standard_metadata.ingress_port;
     }
 
+    @name("instr_rts_ifq") action instr_rts_ifq() {
+        // If queue is longer than X, return to sender with rd = queue length
+        if (standard_metadata.enq_qdepth > hdr.instr.rs1) {
+            hdr.instr.rd = standard_metadata.enq_qdepth;
+            instr_rts();
+        }
+    }
+
     @name("ipv4_lpm") table ipv4_lpm {
         actions = {
             _drop;
@@ -92,11 +101,13 @@ control ingress(inout headers hdr, inout metadata meta, inout standard_metadata_
         actions = {
             _drop;
             instr_rts;
+            instr_rts_ifq;
             NoAction;
         }
         default_action = NoAction();
         const entries = {
             INSTR_RTS : instr_rts();
+            INSTR_RTS_IFQ : instr_rts_ifq();
         }
     }
 
