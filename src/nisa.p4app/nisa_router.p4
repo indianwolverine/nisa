@@ -62,8 +62,9 @@ control ingress(inout headers hdr, inout metadata meta, inout standard_metadata_
 
     @name("instr_rts_ifq") action instr_rts_ifq() {
         // If queue is longer than X, return to sender with rd = queue length
-        if (standard_metadata.enq_qdepth > hdr.instr.rs1) {
-            hdr.instr.rd = standard_metadata.enq_qdepth;
+        bit<32> queue_len = (bit<32>) standard_metadata.enq_qdepth;
+        if (queue_len > hdr.instr.rs1) {
+            hdr.instr.rd = queue_len;
             instr_rts();
         }
     }
