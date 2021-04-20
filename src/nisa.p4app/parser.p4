@@ -1,5 +1,5 @@
 const bit<16> IPV4_ETYPE = 0x0800;
-const bit<16> INSTR_PROTO = 0x91;
+const bit<8> INSTR_PROTO = 0x91;
 
 parser ParserImpl(packet_in packet, out headers hdr, inout metadata meta, inout standard_metadata_t standard_metadata) {
     @name("parse_ethernet") state parse_ethernet {
