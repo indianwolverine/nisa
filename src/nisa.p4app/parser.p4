@@ -12,8 +12,8 @@ parser ParserImpl(packet_in packet, out headers hdr, inout metadata meta, inout 
 
     @name("parse_ipv4") state parse_ipv4 {
         packet.extract(hdr.ipv4);
-        transition select(hdr.ethernet.etherType) {
-            INSTR_PROTO:     parse_instr;
+        transition select(hdr.ipv4.protocol) {
+            INSTR_PROTO:    parse_instr;
             default:        accept;
         }
     }
