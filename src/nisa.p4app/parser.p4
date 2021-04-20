@@ -1,19 +1,21 @@
 const bit<16> IPV4_ETYPE = 0x0800;
-const bit<16> INSTR_ETYPE = 0x9191;
+const bit<16> INSTR_PROTO = 0x91;
 
 parser ParserImpl(packet_in packet, out headers hdr, inout metadata meta, inout standard_metadata_t standard_metadata) {
     @name("parse_ethernet") state parse_ethernet {
         packet.extract(hdr.ethernet);
         transition select(hdr.ethernet.etherType) {
             IPV4_ETYPE:     parse_ipv4;
-            INSTR_ETYPE:    parse_instr;
             default:        accept;
         }
     }
 
     @name("parse_ipv4") state parse_ipv4 {
         packet.extract(hdr.ipv4);
-        transition accept;
+        transition select(hdr.ethernet.etherType) {
+            INSTR_PROTO:     parse_instr;
+            default:        accept;
+        }
     }
 
     @name("parse_instr") state parse_instr {
