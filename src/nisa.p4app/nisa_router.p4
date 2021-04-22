@@ -6,6 +6,7 @@
 
 const bit<8> INSTR_RTS = 0x00;
 const bit<8> INSTR_RTS_IFQ = 0x01;
+const bit<8> INSTR_DEF = 0x02;
 
 control egress(inout headers hdr, inout metadata meta, inout standard_metadata_t standard_metadata) {
     @name("rewrite_mac") action rewrite_mac(bit<48> smac) {
@@ -69,6 +70,18 @@ control ingress(inout headers hdr, inout metadata meta, inout standard_metadata_
         }
     }
 
+    @name("instr_def") action instr_def() {
+        // If queue is longer than X, deflect to port P with rd=queue_len
+        bit<32> queue_len = (bit<32>) standard_metadata.enq_qdepth;
+        if (queue_len > hdr.instr.rs1) {
+            // Change port
+            standard_metadata.egress_spec = (bit<9>) hdr.instr.rs2;
+
+            // Update queue len
+            hdr.instr.rd = queue_len;
+        }
+    }
+
     @name("ipv4_lpm") table ipv4_lpm {
         actions = {
             _drop;
@@ -103,12 +116,14 @@ control ingress(inout headers hdr, inout metadata meta, inout standard_metadata_
             _drop;
             instr_rts;
             instr_rts_ifq;
+            instr_def;
             NoAction;
         }
         default_action = NoAction();
         const entries = {
             INSTR_RTS : instr_rts();
             INSTR_RTS_IFQ : instr_rts_ifq();
+            INSTR_DEF : instr_def();
         }
     }
 
